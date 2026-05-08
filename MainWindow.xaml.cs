@@ -1,4 +1,9 @@
-﻿using System.Text;
+﻿using System.Collections.ObjectModel;
+using System.ComponentModel;
+using System.Diagnostics;
+using System.Drawing;
+using System.IO;
+using System.Text;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
@@ -6,14 +11,10 @@ using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
-using System.Collections.ObjectModel;
-using System.Diagnostics;
 using System.Windows.Threading;
-using System.Drawing;
-using System.IO;
-using System.Windows.Media.Imaging;
 
 namespace Fourier
 {
@@ -32,6 +33,8 @@ namespace Fourier
         private const int CanvasWidth = 900;
         private const int CanvasHeight = 600;
 
+        private bool circleVisible = false;
+
         public MainWindow()
         {
             InitializeComponent();
@@ -44,7 +47,9 @@ namespace Fourier
                 new Circle { Radius = 10, Time = 1 }
             };
 
-
+            //subscription do zmian radius/time dla kazdego el
+            foreach (var c in Circles)
+                c.PropertyChanged += Circle_PropertyChanged;
 
             timer = new DispatcherTimer(); //tworzymy timer
             timer.Interval = TimeSpan.FromMilliseconds(100); //co 100ms wywoluje event Tick
@@ -77,6 +82,7 @@ namespace Fourier
                     ClearBitmap();
                     DrawCircle(Circles[0].Radius);
                     UpdateImage();
+                    circleVisible = true;
                 }
                 return;
             }
@@ -125,6 +131,21 @@ namespace Fourier
             }
         }
 
+        private void Circle_PropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            //tylko jak kolos widoczne
+            if (!circleVisible) return;
+
+            
+            //i tylko jak zmieni sie pierwszy el kolekcji cicrcles[0]
+            if (sender == Circles[0] && e.PropertyName == nameof(Circle.Radius))
+            {
+                ClearBitmap();
+                DrawCircle(Circles[0].Radius);
+                UpdateImage();
+            }
+        }
+
         private void ExitMenuItem_Click(object sender, RoutedEventArgs e)
         {
             Application.Current.Shutdown();
@@ -168,6 +189,7 @@ namespace Fourier
 
             ClearBitmap();
             UpdateImage();
+            circleVisible = false;
         }
     }
 }
