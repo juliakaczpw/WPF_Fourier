@@ -11,6 +11,9 @@ using System.Windows.Shapes;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Windows.Threading;
+using System.Drawing;
+using System.IO;
+using System.Windows.Media.Imaging;
 
 namespace Fourier
 {
@@ -25,6 +28,10 @@ namespace Fourier
         private Stopwatch stopwatch;
         private const double TotalSeconds = 10.0;
 
+        private Bitmap drawingBitmap;
+        private const int CanvasWidth = 900;
+        private const int CanvasHeight = 600;
+
         public MainWindow()
         {
             InitializeComponent();
@@ -37,6 +44,8 @@ namespace Fourier
                 new Circle { Radius = 10, Time = 1 }
             };
 
+
+
             timer = new DispatcherTimer(); //tworzymy timer
             timer.Interval = TimeSpan.FromMilliseconds(100); //co 100ms wywoluje event Tick
             timer.Tick += Timer_Tick; //event subscription, dodajemy susbcriber do listy sluchaczy eventu
@@ -44,6 +53,11 @@ namespace Fourier
             stopwatch = new Stopwatch(); //stoper, nie liczy dopoki nie ma start
 
             DataContext = this;
+
+            //inicjalizujemy bitmapy
+            drawingBitmap = new Bitmap(CanvasWidth, CanvasHeight);
+            ClearBitmap();
+            UpdateImage();
         }
 
         private void Timer_Tick(object sender, EventArgs e)
@@ -57,10 +71,58 @@ namespace Fourier
                 MainProgressBar.Value = 100.0;
                 timer.Stop();
                 stopwatch.Stop();
+                //rysujemy kolo o promieniu pierwszego el z kolekcjio
+                if (Circles.Count > 0)
+                {
+                    ClearBitmap();
+                    DrawCircle(Circles[0].Radius);
+                    UpdateImage();
+                }
                 return;
             }
             //percent wyliczany na nowo po kazdym ticku, przypisywany na nowo do value
             MainProgressBar.Value = percent;
+        }
+
+        private void ClearBitmap()
+        {
+            using (Graphics g = Graphics.FromImage(drawingBitmap))
+            {
+                g.Clear(System.Drawing.Color.White);
+            }
+        }
+
+        private void DrawCircle(double radius)
+        {
+            using (Graphics g = Graphics.FromImage(drawingBitmap))
+            {
+                g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
+
+                float r = (float)radius;
+                float cx = CanvasWidth / 2f;
+                float cy = CanvasHeight / 2f;
+
+                //drawellipse rysuje elipse wpisana w prostokat, wiec daje lewy-gorny rog i jego width/height
+                g.DrawEllipse(System.Drawing.Pens.Black, cx - r, cy - r, 2 * r, 2 * r);
+            }
+        }
+
+        private void UpdateImage()
+        {
+            using (MemoryStream ms = new MemoryStream())
+            {
+                drawingBitmap.Save(ms, System.Drawing.Imaging.ImageFormat.Png);
+                ms.Position = 0;
+
+                BitmapImage bmp = new BitmapImage();
+                bmp.BeginInit();
+                bmp.CacheOption = BitmapCacheOption.OnLoad;
+                bmp.StreamSource = ms;
+                bmp.EndInit();
+                bmp.Freeze();
+
+                PlotterImage.Source = bmp;
+            }
         }
 
         private void ExitMenuItem_Click(object sender, RoutedEventArgs e)
@@ -103,6 +165,9 @@ namespace Fourier
             timer.Stop();
             stopwatch.Reset(); //zeruje nie wznawia
             MainProgressBar.Value = 0; //pasek na zero
+
+            ClearBitmap();
+            UpdateImage();
         }
     }
 }
