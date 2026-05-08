@@ -9,6 +9,8 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
+using System.Windows.Threading;
 
 namespace Fourier
 {
@@ -18,6 +20,10 @@ namespace Fourier
     public partial class MainWindow : Window
     {
         public ObservableCollection<Circle> Circles { get; set; }
+
+        private DispatcherTimer timer;
+        private Stopwatch stopwatch;
+        private const double TotalSeconds = 10.0;
 
         public MainWindow()
         {
@@ -31,7 +37,29 @@ namespace Fourier
                 new Circle { Radius = 10, Time = 1 }
             };
 
+            timer = new DispatcherTimer(); //tworzymy timer
+            timer.Interval = TimeSpan.FromMilliseconds(100); //co 100ms wywoluje event Tick
+            timer.Tick += Timer_Tick; //event subscription, dodajemy susbcriber do listy sluchaczy eventu
+
+            stopwatch = new Stopwatch(); //stoper, nie liczy dopoki nie ma start
+
             DataContext = this;
+        }
+
+        private void Timer_Tick(object sender, EventArgs e)
+        {
+            double elapsed = stopwatch.Elapsed.TotalSeconds; //elapsed zwraca przedzial czasu (timespan), totaseconds daje ten przedzial jako double
+            double percent = (elapsed / TotalSeconds) * 100.0;
+
+            if (percent >= 100.0)
+            {
+                MainProgressBar.Value = 100.0;
+                timer.Stop();
+                stopwatch.Stop();
+                return;
+            }
+
+            MainProgressBar.Value = percent;
         }
 
         private void ExitMenuItem_Click(object sender, RoutedEventArgs e)
@@ -57,6 +85,8 @@ namespace Fourier
 
         private void StartButtonItem(object sender, RoutedEventArgs e)
         {
+            timer.Start();
+            stopwatch.Start();
 
         }
 
