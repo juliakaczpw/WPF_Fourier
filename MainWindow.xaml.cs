@@ -41,10 +41,10 @@ namespace Fourier
 
             Circles = new ObservableCollection<Circle>
             {
-                new Circle { Radius = 100, Time = 1 },
-                new Circle { Radius = 5, Time = 1.54 },
-                new Circle { Radius = 100, Time = 0.1 },
-                new Circle { Radius = 10, Time = 1 }
+                new Circle { Radius = 200, Frequency = 1 },
+                new Circle { Radius = 80, Frequency = -3 },
+                new Circle { Radius = 30, Frequency = 5 },
+                //new Circle { Radius = 10, Frequency = 1 }
             };
 
             //subscription do zmian radius/time dla kazdego el

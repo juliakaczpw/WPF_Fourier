@@ -11,7 +11,7 @@ namespace Fourier
     public class Circle : INotifyPropertyChanged
     {
         private double radius;
-        private double time;
+        private double frequency;
 
         public double Radius
         {
@@ -27,14 +27,14 @@ namespace Fourier
             }
         }
 
-        public double Time
+        public double Frequency
         {
-            get => time;
+            get => frequency;
             set
             {
-                if (time != value)
+                if (frequency != value)
                 {
-                    time = value;
+                    frequency = value;
                     OnPropertyChanged();
                 }
             }
