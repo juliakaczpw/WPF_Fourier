@@ -48,6 +48,7 @@ namespace Fourier
 
         private void Timer_Tick(object sender, EventArgs e)
         {
+            
             double elapsed = stopwatch.Elapsed.TotalSeconds; //elapsed zwraca przedzial czasu (timespan), totaseconds daje ten przedzial jako double
             double percent = (elapsed / TotalSeconds) * 100.0;
 
@@ -58,7 +59,7 @@ namespace Fourier
                 stopwatch.Stop();
                 return;
             }
-
+            //percent wyliczany na nowo po kazdym ticku, przypisywany na nowo do value
             MainProgressBar.Value = percent;
         }
 
@@ -92,12 +93,16 @@ namespace Fourier
 
         private void PauseButtonItem(object sender, RoutedEventArgs e)
         {
+            timer.Stop();
+            stopwatch.Stop();
 
         }
 
         private void ResetButtonItem(object sender, RoutedEventArgs e)
         {
-
+            timer.Stop();
+            stopwatch.Reset(); //zeruje nie wznawia
+            MainProgressBar.Value = 0; //pasek na zero
         }
     }
 }
