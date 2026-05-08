@@ -169,8 +169,8 @@ namespace Fourier
 
         private void Timer_Tick(object sender, EventArgs e)
         {
-            
-            double elapsed = stopwatch.Elapsed.TotalSeconds; //elapsed zwraca przedzial czasu (timespan), totaseconds daje ten przedzial jako double
+
+            double elapsed = stopwatch.Elapsed.TotalSeconds;
             double percent = (elapsed / TotalSeconds) * 100.0;
 
             if (percent >= 100.0)
@@ -178,16 +178,12 @@ namespace Fourier
                 MainProgressBar.Value = 100.0;
                 timer.Stop();
                 stopwatch.Stop();
-                //rysujemy kolo o promieniu pierwszego el z kolekcjio
-                if (Circles.Count > 0)
-                {
-                    
-                    circleVisible = true;
-                }
+                UpdatePositions(TotalSeconds);  //ostateczna klatka
                 return;
             }
-            //percent wyliczany na nowo po kazdym ticku, przypisywany na nowo do value
+
             MainProgressBar.Value = percent;
+            UpdatePositions(elapsed);  //animacja
         }
 
        
