@@ -33,7 +33,13 @@
         </GroupBox>
 
         <GroupBox Header="Circles" Grid.Row="1" Grid.Column="1">
-            <DataGrid x:Name="CirclesDataGrid"/>
+            <DataGrid x:Name="CirclesDataGrid" ItemsSource="{Binding Circles}" AutoGenerateColumns="False"
+                      CanUserAddRows="True">
+                <DataGrid.Columns>
+                    <DataGridTextColumn Header="radius" Binding="{Binding Radius}" Width="*"/>
+                    <DataGridTextColumn Header="time" Binding="{Binding Time}" Width="*"/>
+                </DataGrid.Columns>
+            </DataGrid>
         </GroupBox>
 
         <ProgressBar x:Name="MainProgressBar" Grid.Row="2" Grid.Column="0"
