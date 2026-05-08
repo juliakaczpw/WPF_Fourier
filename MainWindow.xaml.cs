@@ -40,5 +40,20 @@ namespace Fourier
         {
 
         }
+
+        private void StartButtonItem(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void PauseButtonItem(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void ResetButtonItem(object sender, RoutedEventArgs e)
+        {
+
+        }
     }
 }
